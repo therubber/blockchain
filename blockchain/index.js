@@ -1,5 +1,5 @@
 const Block = require('./block');
-const cryptoHash = require('../crypto-hash');
+const cryptoHash = require('../util/crypto-hash');
 
 class Blockchain {
 
@@ -29,20 +29,13 @@ class Blockchain {
         return this.chain[this.chain.length - 1];
     }
 
-    getFirstBlock() {
-        return this.chain[0];
-    }
-
     static isValidChain(chain) {
-        if (this.firstBlockValid(chain) && this.dataValid(chain) && this.difficultyValid(chain)) {
-            return true;
-        }
-        return false;
+        return this.firstBlockValid(chain) && this.dataValid(chain) && this.difficultyValid(chain);
     }
 
     static firstBlockValid(chain) {
         let isValid = false;
-        if (JSON.stringify(chain[0]) == JSON.stringify(Block.genesis())) {
+        if (JSON.stringify(chain[0]) === JSON.stringify(Block.genesis())) {
             isValid = true;
         }
         return isValid;

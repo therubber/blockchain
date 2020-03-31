@@ -1,5 +1,5 @@
 const Block = require('./block');
-const cryptoHash = require('../crypto-hash');
+const cryptoHash = require('../util/crypto-hash');
 const {GENESIS_DATA, MINE_RATE} = require('../config')
 const hexToBinary = require('hex-to-binary');
 
@@ -8,7 +8,7 @@ describe('Block', () => {
     const timestamp = 2000;
     const lastHash = 'foo-lastHash';
     const hash = 'foo-hash';
-    const data = ['blockchain', 'data'];
+    let data = ['blockchain', 'data'];
     const nonce = 1;
     const difficulty = 1;
     const block = new Block({timestamp, lastHash, hash, data, nonce, difficulty});
@@ -55,8 +55,8 @@ describe('Block', () => {
     describe('mineBlock()', () => {
 
         const lastBlock = Block.genesis();
-        const data = 'mined data';
         const minedBlock = Block.mineBlock({lastBlock, data});
+        data = 'mined data';
 
         it('returns instance of Block', () => {
             expect(minedBlock instanceof Block).toBe(true);
