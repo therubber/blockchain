@@ -17,6 +17,7 @@ describe('Wallet', () => {
     });
 
     describe('signing data', () => {
+
         const data = 'foobar';
 
         it('verifies a signature', () => {

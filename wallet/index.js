@@ -12,7 +12,7 @@ class Wallet {
     }
 
     sign(data) {
-        this.keyPair.sign(cryptoHash(data));
+        return this.keyPair.sign(cryptoHash(data));
     }
 }
 
