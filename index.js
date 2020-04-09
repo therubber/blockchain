@@ -69,7 +69,7 @@ const syncWithRootState = () => {
         if(!error && response.statusCode === 200) {
             const rootTxMap = JSON.parse(body);
             console.log('replacing txPool with ', rootTxMap);
-            transactionPool.transactionMap = rootTxMap;
+            transactionPool.setMap(rootTxMap);
         }
     });
 };

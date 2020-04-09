@@ -25,4 +25,41 @@ describe('TransactionPool', () => {
             expect(transactionPool.existingTransaction({inputAddress: senderWallet.publicKey})).toBe(transaction);
         });
     });
+
+    describe('valid transactions', () => {
+        let validTransactions, errorMock;
+
+        beforeEach(() => {
+           validTransactions = [];
+           errorMock = jest.fn();
+           global.console.error = errorMock;
+
+           for(let i = 0; i <= 10; i++) {
+               transaction = new Transaction({
+                   senderWallet,
+                   recipient: 'some-recipient',
+                   amount: 50
+               });
+
+               if(i % 3 === 0) {
+                   transaction.input.amount = 999999;
+               } else if (i % 3 === 1) {
+                   transaction.input.signature = new Wallet().sign(transaction);
+               } else {
+                   validTransactions.push(transaction);
+               }
+
+               transactionPool.setTransaction(transaction);
+           }
+        });
+
+        it('returns valid transactions', () => {
+           expect(transactionPool.validTransactions()).toStrictEqual(validTransactions);
+        });
+
+        it('logs errors for the invalid transactions', () => {
+            transactionPool.validTransactions();
+            expect(errorMock).toHaveBeenCalled();
+        });
+    });
 });
