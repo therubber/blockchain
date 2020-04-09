@@ -7,9 +7,9 @@ const CHANNELS = {
 };
 
 class PubSub {
-    constructor({blockchain, transactionPool}) {
+    constructor({blockchain, txPool}) {
         this.blockchain = blockchain;
-        this.transactionPool = transactionPool;
+        this.txPool = txPool;
         this.publisher = redis.createClient();
         this.subscriber = redis.createClient();
 
@@ -30,7 +30,7 @@ class PubSub {
                 this.blockchain.replacechain(parsedMessage);
                 break;
             case CHANNELS.TX:
-                this.transactionPool.setTransaction(parsedMessage);
+                this.txPool.setTx(parsedMessage);
                 break;
             default:
                 return;
@@ -58,10 +58,10 @@ class PubSub {
         });
     }
 
-    broadcastTx(transaction) {
+    broadcastTx(tx) {
         this.publish({
             channel: CHANNELS.TX,
-            message: JSON.stringify(transaction)
+            message: JSON.stringify(tx)
         });
     }
 }

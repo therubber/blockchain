@@ -3,14 +3,16 @@ const Blockchain = require('./blockchain');
 const bodyParser = require('body-parser');
 const PubSub = require('./app/pubsub');
 const request = require('request');
-const TransactionPool = require('./wallet/transaction-pool');
+const TxPool = require('./wallet/txPool');
 const Wallet = require('./wallet/index');
+const TxMiner = require('./app/txMiner');
 
 const app = express();
 const blockchain = new Blockchain();
-const transactionPool = new TransactionPool();
+const txPool = new TxPool();
 const wallet = new Wallet();
-const pubSub = new PubSub({blockchain, transactionPool});
+const pubSub = new PubSub({blockchain, txPool});
+const txMiner = new TxMiner({blockchain, txPool, wallet, pubsub});
 
 const DEFAULT_PORT = 3000;
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
@@ -32,27 +34,27 @@ app.post('/api/mine', (req, res) => {
 app.post('/api/transact', (req, res) => {
     const {recipient, amount} = req.body;
 
-    let transaction = transactionPool.existingTransaction({inputAddress: wallet.publicKey});
+    let tx = txPool.existingTx({inputAddress: wallet.publicKey});
 
     try {
-        if(transaction) {
-            transaction.update({senderWallet: wallet, recipient, amount});
+        if(tx) {
+            tx.update({senderWallet: wallet, recipient, amount});
         } else {
-            transaction = wallet.createTransaction({recipient, amount});
+            tx = wallet.createTx({recipient, amount});
         }
     } catch (error) {
         return res.status(400).json({type: 'error', message: error.message});
     }
 
-    transactionPool.setTransaction(transaction);
+    txPool.setTx(tx);
 
-    pubSub.broadcastTx(transaction);
+    pubSub.broadcastTx(tx);
 
-    res.json({type: 'success', transaction});
+    res.json({type: 'success', tx});
 });
 
-app.get('/api/transaction-pool-map', (req, res) => {
-    res.json(transactionPool.transactionMap);
+app.get('/api/tx-pool-map', (req, res) => {
+    res.json(txPool.txMap);
 });
 
 
@@ -65,11 +67,11 @@ const syncWithRootState = () => {
         }
     });
 
-    request({url: `${ROOT_NODE_ADDRESS}/api/transaction-pool-map`}, (error, response, body) => {
+    request({url: `${ROOT_NODE_ADDRESS}/api/tx-pool-map`}, (error, response, body) => {
         if(!error && response.statusCode === 200) {
             const rootTxMap = JSON.parse(body);
             console.log('replacing txPool with ', rootTxMap);
-            transactionPool.setMap(rootTxMap);
+            txPool.setMap(rootTxMap);
         }
     });
 };
