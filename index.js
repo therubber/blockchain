@@ -12,7 +12,7 @@ const blockchain = new Blockchain();
 const txPool = new TxPool();
 const wallet = new Wallet();
 const pubSub = new PubSub({blockchain, txPool});
-const txMiner = new TxMiner({blockchain, txPool, wallet, pubsub});
+const txMiner = new TxMiner({blockchain, txPool, wallet, pubSub});
 
 const DEFAULT_PORT = 3000;
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
@@ -55,6 +55,12 @@ app.post('/api/transact', (req, res) => {
 
 app.get('/api/tx-pool-map', (req, res) => {
     res.json(txPool.txMap);
+});
+
+app.post('/api/mine-tx', (req,res) => {
+    txMiner.mineTx();
+
+    res.redirect('/api/blocks');
 });
 
 

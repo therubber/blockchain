@@ -1,11 +1,11 @@
 const Tx = require('../wallet/tx');
 
 class TxMiner {
-    constructor({blockchain, txPool, wallet, pubsub}) {
+    constructor({blockchain, txPool, wallet, pubSub}) {
         this.blockchain = blockchain;
         this.txPool = txPool;
         this.wallet = wallet;
-        this.pubsub = pubsub;
+        this.pubSub = pubSub;
     }
 
     mineTx() {
@@ -17,7 +17,7 @@ class TxMiner {
 
         this.blockchain.addBlock({data: validTransactions});
 
-        pubsub.broadcastChain();
+        this.pubSub.broadcastChain();
 
         this.txPool.clear();
     }

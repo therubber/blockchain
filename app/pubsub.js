@@ -27,7 +27,11 @@ class PubSub {
 
         switch(channel) {
             case CHANNELS.BLOCKCHAIN:
-                this.blockchain.replacechain(parsedMessage);
+                this.blockchain.replaceChain(parsedMessage, () => {
+                    this.txPool.clearChainTx({
+                        chain: parsedMessage
+                    });
+                });
                 break;
             case CHANNELS.TX:
                 this.txPool.setTx(parsedMessage);
