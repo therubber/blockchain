@@ -15,11 +15,39 @@ class Wallet {
         return this.keyPair.sign(cryptoHash(data));
     }
 
-    createTx({amount, recipient}) {
-        if(amount > this.balance) {
+    createTx({recipient, amount, chain}) {
+        if (chain) {
+            this.balance = Wallet.calculateBalance({chain, address: this.publicKey});
+        }
+
+        if (amount > this.balance) {
             throw new Error('Amount exceeds balance');
         }
         return new Tx({senderWallet: this, recipient, amount});
+    }
+
+    static calculateBalance({chain, address}) {
+        let hasConductedTx = false;
+        let outputsTotal = 0;
+        let block, addressOutput;
+
+        for (let i = chain.length - 1; i > 0; i--) {
+            block = chain[i];
+            for (let tx of block.data) {
+                if (tx.input.address === address) {
+                    hasConductedTx = true;
+                }
+                addressOutput = tx.outputMap[address];
+
+                if (addressOutput) {
+                    outputsTotal += addressOutput;
+                }
+            }
+            if (hasConductedTx) {
+                break;
+            }
+        }
+        return hasConductedTx ? outputsTotal : STARTING_BALANCE + outputsTotal;
     }
 }
 
