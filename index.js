@@ -63,6 +63,15 @@ app.post('/api/mine-tx', (req,res) => {
     res.redirect('/api/blocks');
 });
 
+app.get('/api/wallet-info', (req, res) => {
+
+    const address = wallet.publicKey;
+    res.json({
+        address,
+        balance: Wallet.calculateBalance({chain: blockchain.chain, address})
+    });
+});
+
 
 const syncWithRootState = () => {
     request({url: `${ROOT_NODE_ADDRESS}/api/blocks`}, (error, response, body) => {

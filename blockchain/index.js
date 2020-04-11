@@ -1,5 +1,8 @@
 const Block = require('./block');
 const {cryptoHash} = require('../util');
+const {REWARD_INPUT, MINE_REWARD} = require('../config');
+const Transaction = require('../wallet/tx');
+const Wallet = require('../wallet');
 
 class Blockchain {
 
@@ -12,13 +15,17 @@ class Blockchain {
         this.chain.push(newBlock);
     }
 
-    replaceChain(chain, onSuccess) {
+    replaceChain(chain, validateTx, onSuccess) {
         if (this.chain.length >= chain.length) {
             console.error('Chain has to be longer!');
             return;
         }
         if (!Blockchain.isValidChain(chain)) {
             console.error('Chain has to be valid!');
+            return;
+        }
+        if(validateTx && !this.txDataValid({chain})) {
+            console.error('Chain has invalid transaction data!');
             return;
         }
 
@@ -30,6 +37,43 @@ class Blockchain {
 
     getLastBlock() {
         return this.chain[this.chain.length - 1];
+    }
+
+    txDataValid({chain}) {
+        for(let i = 1; i<chain.length; i++) {
+            const block = chain[i];
+            const txSet = new Set();
+            let rTxCount = 0;   // counter for the number of rewardTx per block
+            for (let tx of block.data) {
+                if(tx.input.address === REWARD_INPUT.address) {
+                    rTxCount++;
+                    if (rTxCount > 1) {
+                        console.error('Miner rewards exceed limit!');
+                        return false;
+                    }
+                    if (Object.values(tx.outputMap)[0] !== MINE_REWARD) {
+                        console.error('Mine reward is invalid!');
+                        return false;
+                    }
+                } else {
+                    if (!Transaction.validTx(tx)) {
+                        console.error('Invalid Tx!')
+                        return false;
+                    }
+                    if(tx.input.amount !== Wallet.calculateBalance({chain: this.chain, address: tx.input.address})) {
+                        console.error('Invalid input amount!');
+                        return false;
+                    }
+                    if(txSet.has(tx)) {
+                        console.error('An identical tx appers more than once in the block');
+                        return false;
+                    } else {
+                        txSet.add(tx);
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     static isValidChain(chain) {

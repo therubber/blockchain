@@ -1,15 +1,22 @@
 const Blockchain = require('./index');
 const Block = require('./block');
 const {cryptoHash} = require('../util');
+const Wallet = require('../wallet');
+const Tx = require('../wallet/tx');
 
 describe('Blockchain', () => {
 
-    let blockchain, newChain, originalChain;
+    let blockchain, newChain, originalChain, errorMock, logMock;
 
     beforeEach(() => {
         blockchain = new Blockchain();
         newChain = new Blockchain();
         originalChain = blockchain.chain;
+
+        errorMock = jest.fn();
+        logMock = jest.fn();
+        global.console.error = errorMock;
+        global.console.log = logMock;
     });
 
     it('contains a chain Array instance', () => {
@@ -102,16 +109,6 @@ describe('Blockchain', () => {
 
     describe('replaceChain()', () => {
 
-        let errorMock, logMock;
-
-        beforeEach(() => {
-            errorMock = jest.fn();
-            logMock = jest.fn();
-
-            global.console.error = errorMock;
-            global.console.log = logMock;
-        })
-
         describe('new chain is not longer', () => {
 
             beforeEach(() => {
@@ -164,6 +161,98 @@ describe('Blockchain', () => {
                     expect(logMock).toHaveBeenCalled();
                 })
             });
+        });
+
+        describe('and the `validateTx` flag is true', () => {
+            it('calls validTxData()', () => {
+                const txDataValidMock = jest.fn();
+
+                blockchain.txDataValid = txDataValidMock;
+                newChain.addBlock({data: 'foo'});
+                blockchain.replaceChain(newChain.chain, true);
+                expect(txDataValidMock).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe('validTxData()', () => {
+        let wallet, tx, rewardTx;
+
+        beforeEach(() => {
+            wallet = new Wallet();
+            tx = wallet.createTx({recipient: 'Jess T', amount: 50});
+            rewardTx = Tx.rewardTx({minerWallet: wallet});
+        });
+
+        describe('when the txData is valid', () => {
+            it('returns true', () => {
+                newChain.addBlock({data: [tx, rewardTx]});
+                expect(blockchain.txDataValid({chain: newChain.chain,})).toBe(true);
+                expect(errorMock).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('when the txData is invalid', () => {
+            describe('has multiple rewards', () => {
+                it('returns false and logs an error', () => {
+                    newChain.addBlock({data: [tx, rewardTx, rewardTx]});
+                    expect(blockchain.txDataValid({chain: newChain.chain})).toBe(false);
+                    expect(errorMock).toHaveBeenCalled();
+                });
+            });
+
+            describe('txData has at least one malformed outputMap', () => {
+                describe('and the tx is not a rewardTx', () => {
+                    it('returns false and logs an error', () => {
+                        tx.outputMap[wallet.publicKey] = 999999;
+                        newChain.addBlock({data: [tx, rewardTx]});
+                        expect(blockchain.txDataValid({chain: newChain.chain})).toBe(false);
+                        expect(errorMock).toHaveBeenCalled();
+                    });
+                });
+
+                describe('and the tx is a rewardTx', () => {
+                    it('returns false and logs an error', () => {
+                        rewardTx.outputMap[wallet.publicKey] = 999999;
+                        newChain.addBlock({data: [tx, rewardTx]});
+                        expect(blockchain.txDataValid({chain: newChain.chain})).toBe(false);
+                        expect(errorMock).toHaveBeenCalled();
+                    });
+                });
+            });
+
+            describe('and the txData has at least one malformed input', () => {
+                it('returns false and logs an error', () => {
+                    wallet.balance = 999999;
+
+                    const evilOM = {
+                        [wallet.publicKey]: 999899,
+                        fooRecipient: 100
+                    }
+                    const evilTx = {
+                        input: {
+                            timestamp: Date.now(),
+                            amount: wallet.balance,
+                            address: wallet.publicKey,
+                            signature: wallet.sign(evilOM)
+                        },
+                        outputMap: evilOM
+                    }
+                    newChain.addBlock({data: [evilTx, rewardTx]});
+
+                    expect(blockchain.txDataValid({chain: newChain.chain})).toBe(false);
+                    expect(errorMock).toHaveBeenCalled();
+                });
+            });
+
+            describe('and the block contains multiple identical txs', () => {
+                it('returns false and logs an error', () => {
+                    newChain.addBlock({data: [tx, tx, tx, rewardTx]});
+
+                    expect(blockchain.txDataValid({chain: newChain.chain})).toBe(false);
+                    expect(errorMock).toHaveBeenCalled();
+                });
+            })
         });
     });
 });
