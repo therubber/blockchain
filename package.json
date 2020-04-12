@@ -21,6 +21,7 @@
   "license": "ISC",
   "devDependencies": {
     "babel-loader": "^7.1.5",
+    "babel-preset-react": "^6.24.1",
     "cross-env": "^5.2.0",
     "elliptic": "^6.5.2",
     "jest": "^25.2.0",
@@ -28,10 +29,17 @@
     "nodemon": "^1.18.4"
   },
   "dependencies": {
+    "acorn": "^7.1.1",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "hex-to-binary": "^1.0.1",
     "parcel-bundler": "^1.12.4",
+    "preset-react": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "redis": "^2.8.0",

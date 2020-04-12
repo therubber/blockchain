@@ -97,6 +97,34 @@ const syncWithRootState = () => {
     });
 };
 
+const walletFoo = new Wallet();
+const walletBar = new Wallet();
+
+const generateWalletTx = ({wallet, recipient, amount}) => {
+    const tx = wallet.createTx({recipient, amount, chain: blockchain.chain});
+
+    txPool.setTx(tx);
+}
+
+const walletAction = () => generateWalletTx({wallet, recipient: walletFoo.publicKey, amount: 10, });
+const walletFooAction = () => generateWalletTx({wallet: walletFoo, recipient: walletBar, amount: 10});
+const walletBarAction = () => generateWalletTx({wallet: walletBar, recipient: wallet.publicKey, amount: 10});
+
+for(let i = 0; i < 10; i++) {
+    if(i % 3 === 0) {
+        walletAction();
+        walletFooAction();
+    } else if (i % 3 === 1) {
+        walletAction();
+        walletBarAction();
+    } else {
+        walletFooAction();
+        walletBarAction();
+    }
+
+    txMiner.mineTx();
+}
+
 let PEER_PORT;
 
 if (process.env.GENERATE_PEER_PORT === 'true') {
