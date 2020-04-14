@@ -32,6 +32,10 @@ body {
     padding: 5%;
 }
 
+.ConductTx {
+    margin: 10%;
+}
+
 a, a:hover {
     color: #e666;
 }

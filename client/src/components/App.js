@@ -20,13 +20,15 @@ class App extends Component {
                 <br />
                 <div>Welcome to the Blockchain!</div>
                 <br />
-                <div><Link to='/blocks'> Blocks</Link></div>
+                <div><Link to='/conduct-tx'>New transaction</Link></div>
                 <br />
                 <div className='WalletInfo'>
                     <div>Address: <br /> {address}</div>
                     <br />
                     <div>Balance: <br /> {balance}</div>
                 </div>
+                <br />
+                <div><Link to='/blocks'> Blocks</Link></div>
             </div>
         );
     }

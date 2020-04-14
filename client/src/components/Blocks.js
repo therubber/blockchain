@@ -18,7 +18,7 @@ class Blocks extends Component {
             <div>
                 <h3>Blocks</h3>
                 <br />
-                <div><Link to='/'>Wallet</Link></div>
+                <div><Link to='/'>Back to wallet</Link></div>
                 <br />
                 {
                     this.state.blocks.map(block => {
