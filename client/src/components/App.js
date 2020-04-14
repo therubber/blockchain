@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import Blocks from './Blocks';
 import logo from '../assets/coin.png';
 import '../index.css';
+import {Link} from "react-router-dom";
 
 class App extends Component {
     state = {walletInfo: {}}
@@ -16,16 +16,17 @@ class App extends Component {
         const {address, balance} = this.state.walletInfo;
         return (
             <div className='App'>
-                <img className='logo' src={logo}></img>
+                <img className='logo' src={logo} />
                 <br />
                 <div>Welcome to the Blockchain!</div>
                 <br />
                 <div className='WalletInfo'>
                     <div>Address: <br /> {address}</div>
+                    <br />
                     <div>Balance: <br /> {balance}</div>
                 </div>
                 <br />
-                <Blocks />
+                <div><Link to='/blocks'>Block explorer</Link></div>
             </div>
         );
     }
