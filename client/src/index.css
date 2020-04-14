@@ -31,3 +31,7 @@ body {
 .Tx {
     padding: 5%;
 }
+
+a, a:hover {
+    color: #e666;
+}
