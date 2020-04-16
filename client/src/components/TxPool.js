@@ -17,7 +17,11 @@ class TxPool extends Component {
     componentDidMount() {
         this.fetchTxPoolMap();
 
-        setInterval(() => this.fetchTxPoolMap(), POLL_INTERVAL_MS);
+        this.fetchPoolMapInterval = setInterval(() => this.fetchTxPoolMap(), POLL_INTERVAL_MS);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.fetchPoolMapInterval);
     }
 
     render() {
