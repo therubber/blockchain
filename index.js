@@ -39,7 +39,7 @@ app.post('/api/transact', (req, res) => {
     let tx = txPool.existingTx({inputAddress: wallet.publicKey});
 
     try {
-        if(tx) {
+        if (tx) {
             tx.update({senderWallet: wallet, recipient, amount});
         } else {
             tx = wallet.createTx({recipient, amount, chain: blockchain.chain});
@@ -59,7 +59,7 @@ app.get('/api/tx-pool-map', (req, res) => {
     res.json(txPool.txMap);
 });
 
-app.post('/api/mine-tx', (req,res) => {
+app.post('/api/mine-tx', (req, res) => {
     txMiner.mineTx();
 
     res.redirect('/api/blocks');
@@ -89,7 +89,7 @@ const syncWithRootState = () => {
     });
 
     request({url: `${ROOT_NODE_ADDRESS}/api/tx-pool-map`}, (error, response, body) => {
-        if(!error && response.statusCode === 200) {
+        if (!error && response.statusCode === 200) {
             const rootTxMap = JSON.parse(body);
             console.log('replacing txPool with ', rootTxMap);
             txPool.setMap(rootTxMap);
@@ -106,12 +106,12 @@ const generateWalletTx = ({wallet, recipient, amount}) => {
     txPool.setTx(tx);
 }
 
-const walletAction = () => generateWalletTx({wallet, recipient: walletFoo.publicKey, amount: 10, });
+const walletAction = () => generateWalletTx({wallet, recipient: walletFoo.publicKey, amount: 10,});
 const walletFooAction = () => generateWalletTx({wallet: walletFoo, recipient: walletBar, amount: 10});
 const walletBarAction = () => generateWalletTx({wallet: walletBar, recipient: wallet.publicKey, amount: 10});
 
-for(let i = 0; i < 10; i++) {
-    if(i % 3 === 0) {
+for (let i = 0; i < 10; i++) {
+    if (i % 3 === 0) {
         walletAction();
         walletFooAction();
     } else if (i % 3 === 1) {
@@ -134,7 +134,7 @@ if (process.env.GENERATE_PEER_PORT === 'true') {
 const PORT = PEER_PORT || DEFAULT_PORT;
 app.listen(PORT, () => {
     console.log(`listening at localhost:${PORT}`);
-    if(PORT !== DEFAULT_PORT) {
+    if (PORT !== DEFAULT_PORT) {
         syncWithRootState();
     }
 });
