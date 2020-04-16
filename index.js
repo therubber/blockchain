@@ -14,7 +14,9 @@ const REDIS_URL = isDevelopment ?
     'redis://127.0.0.1:6379' :
     'redis://h:pdae6da7e48c32145a69b1cde5a5417da43bc6cd2fc4a58c6a29f59347a970ba9@ec2-18-207-83-208.compute-1.amazonaws.com:21429';
 const DEFAULT_PORT = 3000;
-const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
+const ROOT_NODE_ADDRESS = isDevelopment ?
+    `http://localhost:${DEFAULT_PORT}` :
+    'http://https://glacial-beach-03145.herokuapp.com';
 
 const app = express();
 const blockchain = new Blockchain();
