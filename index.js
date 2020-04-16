@@ -8,15 +8,20 @@ const TxPool = require('./wallet/txPool');
 const Wallet = require('./wallet/index');
 const TxMiner = require('./app/txMiner');
 
+const isDevelopment = process.env.ENV === 'development';
+
+const REDIS_URL = isDevelopment ?
+    'redis://127.0.0.1:6379' :
+    'redis://h:pdae6da7e48c32145a69b1cde5a5417da43bc6cd2fc4a58c6a29f59347a970ba9@ec2-18-207-83-208.compute-1.amazonaws.com:21429';
+const DEFAULT_PORT = 3000;
+const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
+
 const app = express();
 const blockchain = new Blockchain();
 const txPool = new TxPool();
 const wallet = new Wallet();
-const pubSub = new PubSub({blockchain, txPool});
+const pubSub = new PubSub({blockchain, txPool, redisUrl: REDIS_URL});
 const txMiner = new TxMiner({blockchain, txPool, wallet, pubSub});
-
-const DEFAULT_PORT = 3000;
-const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'client/dist')));
@@ -59,8 +64,10 @@ app.get('/api/tx-pool-map', (req, res) => {
     res.json(txPool.txMap);
 });
 
-app.post('/api/mine-tx', (req, res) => {
+app.get('/api/mine-tx', (req, res) => {
     txMiner.mineTx();
+
+    txPool.clearChainTx({chain: blockchain.chain});
 
     res.redirect('/api/blocks');
 });
@@ -97,32 +104,34 @@ const syncWithRootState = () => {
     });
 };
 
-const walletFoo = new Wallet();
-const walletBar = new Wallet();
+if (isDevelopment) {
+    const walletFoo = new Wallet();
+    const walletBar = new Wallet();
 
-const generateWalletTx = ({testWallet, recipient, amount}) => {
-    const tx = testWallet.createTx({recipient, amount, chain: blockchain.chain});
+    const generateWalletTx = ({testWallet, recipient, amount}) => {
+        const tx = testWallet.createTx({recipient, amount, chain: blockchain.chain});
 
-    txPool.setTx(tx);
-}
-
-const walletAction = () => generateWalletTx({testWallet: wallet, recipient: walletFoo.publicKey, amount: 10,});
-const walletFooAction = () => generateWalletTx({testWallet: walletFoo, recipient: walletBar, amount: 10});
-const walletBarAction = () => generateWalletTx({testWallet: walletBar, recipient: wallet.publicKey, amount: 10});
-
-for (let i = 0; i < 10; i++) {
-    if (i % 3 === 0) {
-        walletAction();
-        walletFooAction();
-    } else if (i % 3 === 1) {
-        walletAction();
-        walletBarAction();
-    } else {
-        walletFooAction();
-        walletBarAction();
+        txPool.setTx(tx);
     }
 
-    txMiner.mineTx();
+    const walletAction = () => generateWalletTx({testWallet: wallet, recipient: walletFoo.publicKey, amount: 10,});
+    const walletFooAction = () => generateWalletTx({testWallet: walletFoo, recipient: walletBar, amount: 10});
+    const walletBarAction = () => generateWalletTx({testWallet: walletBar, recipient: wallet.publicKey, amount: 10});
+
+    for (let i = 0; i < 10; i++) {
+        if (i % 3 === 0) {
+            walletAction();
+            walletFooAction();
+        } else if (i % 3 === 1) {
+            walletAction();
+            walletBarAction();
+        } else {
+            walletFooAction();
+            walletBarAction();
+        }
+
+        txMiner.mineTx();
+    }
 }
 
 let PEER_PORT;
@@ -131,7 +140,7 @@ if (process.env.GENERATE_PEER_PORT === 'true') {
     PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000);
 }
 
-const PORT = PEER_PORT || DEFAULT_PORT;
+const PORT = process.env.port || PEER_PORT || DEFAULT_PORT;
 app.listen(PORT, () => {
     console.log(`listening at localhost:${PORT}`);
     if (PORT !== DEFAULT_PORT) {

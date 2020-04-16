@@ -1,6 +1,5 @@
 const Tx = require('./tx');
 
-
 class TxPool {
 
     constructor() {

@@ -72,7 +72,7 @@ describe('TxPool', () => {
         });
     });
 
-    describe('clearBlockchainTransactions()', () => {
+    describe('clearChainTx()', () => {
         it('clears the pool of any existing blockchain tx', () => {
             const blockchain = new Blockchain();
             const expectedTxMap = {};
@@ -94,7 +94,7 @@ describe('TxPool', () => {
 
             txPool.clearChainTx({chain: blockchain.chain});
 
-            expect(txPool.txMap).toEqual(expectedTxMap);
+            expect(txPool.txMap).toStrictEqual(expectedTxMap);
         });
     });
 });

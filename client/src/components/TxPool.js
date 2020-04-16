@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
+import {Button} from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import Tx from './Tx';
+import history from "../history";
 
 const POLL_INTERVAL_MS = 10000;
 
@@ -12,6 +14,18 @@ class TxPool extends Component {
         fetch(`${document.location.origin}/api/tx-pool-map`)
             .then(response => response.json())
             .then(json => this.setState({txPoolMap: json}));
+    }
+
+    fetchMineTx = () => {
+        fetch(`${document.location.origin}/api/mine-tx`)
+            .then(response => {
+                if (response.status === 200) {
+                    alert('success');
+                    history.push('/blocks');
+                } else {
+                    alert('The mine-transactions request did not complete.');
+                }
+            });
     }
 
     componentDidMount() {
@@ -41,6 +55,14 @@ class TxPool extends Component {
                         )
                     })
                 }
+                <hr/>
+                <Button
+                    variant='danger'
+                    size='sm'
+                    onClick={this.fetchMineTx}
+                >
+                    Mine Transactions
+                </Button>
             </div>
         )
     }
