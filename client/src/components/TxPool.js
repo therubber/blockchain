@@ -2,18 +2,22 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import Tx from './Tx';
 
+const POLL_INTERVAL_MS = 10000;
+
 class TxPool extends Component {
 
     state = {txPoolMap: {}};
 
     fetchTxPoolMap = () => {
-        fetch('http://localhost:3000/api/tx-pool-map')
+        fetch(`${document.location.origin}/api/tx-pool-map`)
             .then(response => response.json())
             .then(json => this.setState({txPoolMap: json}));
     }
 
     componentDidMount() {
         this.fetchTxPoolMap();
+
+        setInterval(() => this.fetchTxPoolMap(), POLL_INTERVAL_MS);
     }
 
     render() {
