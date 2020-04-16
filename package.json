@@ -29,6 +29,7 @@
     "nodemon": "^1.18.4"
   },
   "dependencies": {
+    "@babel/preset-react": "^7.9.4",
     "acorn": "^7.1.1",
     "babel": "^6.23.0",
     "babel-core": "^6.26.3",

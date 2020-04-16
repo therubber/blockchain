@@ -16,19 +16,21 @@ class App extends Component {
         const {address, balance} = this.state.walletInfo;
         return (
             <div className='App'>
-                <img className='logo' src={logo} />
-                <br />
+                <img className='logo' src={logo} alt='blockchain-logo'/>
+                <br/>
                 <div>Welcome to the Blockchain!</div>
-                <br />
-                <div><Link to='/conduct-tx'>New transaction</Link></div>
-                <br />
+                <br/>
                 <div className='WalletInfo'>
-                    <div>Address: <br /> {address}</div>
-                    <br />
-                    <div>Balance: <br /> {balance}</div>
+                    <div>Address: <br/> {address}</div>
+                    <br/>
+                    <div>Balance: <br/> {balance}</div>
                 </div>
-                <br />
+                <br/>
+                <div><Link to='/conduct-tx'>New transaction</Link></div>
+                <br/>
                 <div><Link to='/blocks'> Blocks</Link></div>
+                <br/>
+                <div><Link to='/tx-pool'>Transaction Pool</Link></div>
             </div>
         );
     }

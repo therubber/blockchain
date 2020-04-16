@@ -21,7 +21,6 @@ class Block extends Component {
                     {
                         data.map(tx => (
                             <div key={tx.id}>
-                                <hr color="#fff"/>
                                 <Tx tx={tx} />
                             </div>
                         ))

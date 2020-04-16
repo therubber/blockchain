@@ -22,17 +22,13 @@ body {
     width: 500px;
 }
 
-.Block {
+.Block, .Tx {
     border: 1px solid #fff;
     padding: 5%;
     margin: 2%;
 }
 
-.Tx {
-    padding: 5%;
-}
-
-.ConductTx {
+.ConductTx, .TxPool {
     margin: 10%;
 }
 

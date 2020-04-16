@@ -17,7 +17,6 @@ class Blocks extends Component {
         return (
             <div>
                 <h3>Blocks</h3>
-                <br />
                 <div><Link to='/'>Back to wallet</Link></div>
                 <br />
                 {
