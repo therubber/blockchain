@@ -29,15 +29,16 @@ class Wallet {
     static calculateBalance({chain, address}) {
         let hasConductedTx = false;
         let outputsTotal = 0;
-        let block, addressOutput;
 
         for (let i = chain.length - 1; i > 0; i--) {
-            block = chain[i];
+            const block = chain[i];
+
             for (let tx of block.data) {
                 if (tx.input.address === address) {
                     hasConductedTx = true;
                 }
-                addressOutput = tx.outputMap[address];
+
+                const addressOutput = tx.outputMap[address];
 
                 if (addressOutput) {
                     outputsTotal += addressOutput;

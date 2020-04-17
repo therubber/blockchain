@@ -17,9 +17,9 @@ class TxMiner {
 
         this.blockchain.addBlock({data: validTransactions});
 
-        this.pubSub.broadcastChain();
-
         this.txPool.clear();
+
+        this.pubSub.broadcastChain();
     }
 }
 

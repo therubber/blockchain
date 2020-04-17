@@ -121,14 +121,18 @@ describe('Wallet', () => {
             it('adds the sum of all outputs to wallet balance', () => {
                 expect(
                     Wallet.calculateBalance({chain: blockchain.chain, address: wallet.publicKey})
-                ).toEqual(STARTING_BALANCE + txOne.outputMap[wallet.publicKey] + txTwo.outputMap[wallet.publicKey]);
+                ).toEqual(
+                    STARTING_BALANCE +
+                    txOne.outputMap[wallet.publicKey] +
+                    txTwo.outputMap[wallet.publicKey]
+                );
             });
 
             describe('and the wallet has made a tx', () => {
                 let recentTx;
 
                 beforeEach(() => {
-                    recentTx = wallet.createTx({recipient: 'foo', amount: 50});
+                    recentTx = wallet.createTx({recipient: 'foo', amount: 50, chain: blockchain.chain});
                     blockchain.addBlock({data: [recentTx]});
                 });
 
@@ -142,7 +146,6 @@ describe('Wallet', () => {
                     let sameBlockTx, nextBlockTx;
 
                     beforeEach(() => {
-                        recentTx = wallet.createTx({recipient: 'foo', amount: 50, chain: blockchain.chain});
                         sameBlockTx = Tx.rewardTx({minerWallet: wallet});
                         nextBlockTx = new Wallet().createTx({
                             recipient: wallet.publicKey,

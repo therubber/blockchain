@@ -24,12 +24,14 @@ class Blockchain {
             console.error('Chain has to be valid!');
             return;
         }
-        if(validateTx && !this.txDataValid({chain})) {
+        if (validateTx && !this.txDataValid({chain})) {
             console.error('Chain has invalid transaction data!');
             return;
         }
 
-        if(onSuccess) {onSuccess();}
+        if (onSuccess) {
+            onSuccess();
+        }
 
         this.chain = chain;
         console.log('Chain has been replaced!');
@@ -40,12 +42,12 @@ class Blockchain {
     }
 
     txDataValid({chain}) {
-        for(let i = 1; i<chain.length; i++) {
+        for (let i = 1; i < chain.length; i++) {
             const block = chain[i];
             const txSet = new Set();
             let rTxCount = 0;   // counter for the number of rewardTx per block
             for (let tx of block.data) {
-                if(tx.input.address === REWARD_INPUT.address) {
+                if (tx.input.address === REWARD_INPUT.address) {
                     rTxCount++;
                     if (rTxCount > 1) {
                         console.error('Miner rewards exceed limit!');
@@ -60,12 +62,16 @@ class Blockchain {
                         console.error('Invalid Tx!')
                         return false;
                     }
-                    if(tx.input.amount !== Wallet.calculateBalance({chain: this.chain, address: tx.input.address})) {
+
+                    const trueBalance = Wallet.calculateBalance({chain: this.chain, address: tx.input.address});
+
+                    if(tx.input.amount !== trueBalance) {
                         console.error('Invalid input amount!');
                         return false;
                     }
-                    if(txSet.has(tx)) {
-                        console.error('An identical tx appers more than once in the block');
+
+                    if (txSet.has(tx)) {
+                        console.error('An identical tx appears more than once in the block');
                         return false;
                     } else {
                         txSet.add(tx);

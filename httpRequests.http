@@ -15,7 +15,7 @@ Content-Type: application/json
 
 {
   "recipient": "Jess T",
-  "amount": 80
+  "amount": 75
 }
 
 ###
