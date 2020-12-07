@@ -14,6 +14,7 @@ const isDevPeer = process.env.ENV === 'dev-peer'
 const REDIS_URL = isDevelopment || isDevPeer ?
     'redis://127.0.0.1:6379' :
     'redis://h:pdae6da7e48c32145a69b1cde5a5417da43bc6cd2fc4a58c6a29f59347a970ba9@ec2-18-207-83-208.compute-1.amazonaws.com:21429';
+
 const DEFAULT_PORT = 3000;
 const ROOT_NODE_ADDRESS = isDevelopment ?
     `http://localhost:${DEFAULT_PORT}` :
@@ -79,6 +80,20 @@ app.get('/api/wallet-info', (req, res) => {
         address,
         balance: Wallet.calculateBalance({chain: blockchain.chain, address})
     });
+});
+
+app.get('/api/known-addresses', (req, res) => {
+    const addressMap = {};
+
+    for (let block of blockchain.chain) {
+        for (let transaction of block.data) {
+            const recipient = Object.keys(transaction.outputMap);
+
+            recipient.forEach(recipient => addressMap[recipient] = recipient);
+        }
+    }
+
+    res.json(Object.keys(addressMap));
 });
 
 app.get('*', (req, res) => {

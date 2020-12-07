@@ -14,7 +14,7 @@ POST http://localhost:3000/api/transact
 Content-Type: application/json
 
 {
-  "recipient": "Jess T",
+  "recipient": "Jay Unit",
   "amount": 75
 }
 
