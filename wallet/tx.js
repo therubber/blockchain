@@ -2,6 +2,9 @@ const uuid = require('uuidv1');
 const {verifySignature} = require('../util');
 const {REWARD_INPUT, MINE_REWARD} = require('../config');
 
+/**
+ * Class for transactions
+ */
 class Tx {
     constructor({senderWallet, recipient, amount, outputMap, input}) {
         this.id = uuid();

@@ -15,6 +15,12 @@ class Blockchain {
         this.chain.push(newBlock);
     }
 
+    /**
+     * Replaces the chain maintained by the node if the incoming one is longer
+     * @param chain new chain
+     * @param validateTx validate transactions
+     * @param onSuccess function to execute on success
+     */
     replaceChain(chain, validateTx, onSuccess) {
         if (this.chain.length >= chain.length) {
             console.error('Chain has to be longer!');
@@ -41,6 +47,11 @@ class Blockchain {
         return this.chain[this.chain.length - 1];
     }
 
+    /**
+     * Checks whether the transaction data is valid
+     * @param chain new chain
+     * @returns {boolean} whether the tx data of the new chain is valid
+     */
     txDataValid({chain}) {
         for (let i = 1; i < chain.length; i++) {
             const block = chain[i];
@@ -82,10 +93,20 @@ class Blockchain {
         return true;
     }
 
+    /**
+     * Validates the new chain
+     * @param chain chain to be validated
+     * @returns {boolean} whether the chain is valid
+     */
     static isValidChain(chain) {
         return this.firstBlockValid(chain) && this.dataValid(chain) && this.difficultyValid(chain);
     }
 
+    /**
+     * Checks validity of the first block
+     * @param chain chain to be validated
+     * @returns {boolean} whether the first block is valid
+     */
     static firstBlockValid(chain) {
         let isValid = false;
         if (JSON.stringify(chain[0]) === JSON.stringify(Block.genesis())) {
@@ -94,6 +115,11 @@ class Blockchain {
         return isValid;
     }
 
+    /**
+     * Checks the data for validity
+     * @param chain chain to be validated
+     * @returns {boolean} whether the data is valid
+     */
     static dataValid(chain) {
         for (let i = 1; i < chain.length; i++) {
             const {timestamp, lastHash, nonce, difficulty, data} = chain[i];
@@ -104,6 +130,11 @@ class Blockchain {
         return true;
     }
 
+    /**
+     * Checks the validity of the mining difficulty
+     * @param chain chain to be validated
+     * @returns {boolean} validity of mining difficulty
+     */
     static difficultyValid(chain) {
         let lastDifficulty, selectedDifficulty, difficultyDifference;
 

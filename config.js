@@ -3,6 +3,9 @@ const MINE_RATE = 1000;
 const MINE_REWARD = 50;
 const STARTING_BALANCE = 1000;
 
+/**
+ * Data to be used in the genesis Block
+ */
 const GENESIS_DATA = {
     timestamp: 1,
     lastHash: '-----',

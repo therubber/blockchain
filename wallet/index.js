@@ -2,6 +2,9 @@ const {STARTING_BALANCE} = require('../config');
 const {ec, cryptoHash} = require('../util');
 const Tx = require('./tx');
 
+/**
+ * CLass for wallet
+ */
 class Wallet {
     constructor() {
         this.balance = STARTING_BALANCE;

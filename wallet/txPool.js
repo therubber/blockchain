@@ -1,5 +1,8 @@
 const Tx = require('./tx');
 
+/**
+ * Class for the transaction pool
+ */
 class TxPool {
 
     constructor() {

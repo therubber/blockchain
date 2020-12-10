@@ -2,7 +2,11 @@ const {GENESIS_DATA, MINE_RATE} = require('../config');
 const {cryptoHash} = require('../util');
 const hexToBinary = require('hex-to-binary');
 
+/**
+ * Class for blocks contained in the chain
+ */
 class Block {
+
     constructor({timestamp, lastHash, hash, data, nonce, difficulty}) {
         this.timestamp = timestamp;
         this.lastHash = lastHash;
@@ -12,10 +16,20 @@ class Block {
         this.difficulty = difficulty;
     }
 
+    /**
+     * Returns a genesis block
+     * @returns {Block} genesis block
+     */
     static genesis() {
         return new Block(GENESIS_DATA);
     }
 
+    /**
+     * Mines a new Block
+     * @param lastBlock Block to link new block to
+     * @param data Data to be contained in the block
+     * @returns {Block} New block with link to last block
+     */
     static mineBlock({lastBlock, data}) {
 
         let hash, timestamp;
@@ -36,6 +50,12 @@ class Block {
         });
     }
 
+    /**
+     * Adjusts the mining difficulty depending on the network mine rate
+     * @param originalBlock OriginalBlock
+     * @param timestamp Timestamp
+     * @returns {number|*} Adjusted difficulty
+     */
     static adjustDifficulty({originalBlock, timestamp}) {
         const {difficulty} = originalBlock;
         if (difficulty < 1) {
