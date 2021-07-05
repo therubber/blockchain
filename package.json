@@ -30,6 +30,7 @@
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-react": "^7.12.7",
     "body-parser": "^1.19.0",
+    "caniuse-lite": "^1.0.30001242",
     "deasync": "^0.1.21",
     "elliptic": "^6.5.3",
     "express": "^4.17.1",

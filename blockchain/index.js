@@ -53,7 +53,7 @@ class Blockchain {
      * @returns {boolean} whether the tx data of the new chain is valid
      */
     txDataValid({chain}) {
-        for (let i = 1; i < chain.length; i++) {
+        for (let i = chain.length - 1; i > 0; i--) {
             const block = chain[i];
             const txSet = new Set();
             let rTxCount = 0;   // counter for the number of rewardTx per block
@@ -74,7 +74,13 @@ class Blockchain {
                         return false;
                     }
 
-                    const trueBalance = Wallet.calculateBalance({chain: this.chain, address: tx.input.address});
+                    let trueBalance;
+
+                    if(i === chain.length - 1) {
+                        trueBalance = Wallet.calculateBalance({chain: this.chain, address: tx.input.address});
+                    } else {
+                        trueBalance = Wallet.calculateBalance({chain: this.chain, address: tx.input.address, lastIndex: i - 1});
+                    }
 
                     if(tx.input.amount !== trueBalance) {
                         console.error('Invalid input amount!');

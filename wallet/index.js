@@ -29,11 +29,16 @@ class Wallet {
         return new Tx({senderWallet: this, recipient, amount});
     }
 
-    static calculateBalance({chain, address}) {
+    static calculateBalance({chain, address, lastIndex}) {
         let hasConductedTx = false;
         let outputsTotal = 0;
+        let index = chain.length - 1;
 
-        for (let i = chain.length - 1; i > 0; i--) {
+        if(!(typeof lastIndex === 'undefined')) {
+            index = lastIndex;
+        }
+
+        for (let i = index; i > 0; i--) {
             const block = chain[i];
 
             for (let tx of block.data) {

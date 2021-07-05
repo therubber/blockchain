@@ -46,7 +46,7 @@ class Block {
         } while (hexToBinary(hash).substring('0', difficulty) !== '0'.repeat(difficulty));
 
         return new Block({
-            timestamp, lastHash, data, difficulty, nonce, hash
+            timestamp, lastHash, hash, data, nonce, difficulty
         });
     }
 
